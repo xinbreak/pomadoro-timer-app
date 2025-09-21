@@ -1,53 +1,40 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Timer from './components/Timer/Timer'
 import BreakLength from './components/BreakLength/BreakLength'
 import SessionLength from './components/SessionLength/SessionLength'
 import './App.css'
 
 function App() {
-  // Состояние приложения
   const [breakLength, setBreakLength] = useState(5)
   const [sessionLength, setSessionLength] = useState(25)
-  const [timeLeft, setTimeLeft] = useState(sessionLength * 60)
+  const [timeLeft, setTimeLeft] = useState(25 * 60)
   const [isRunning, setIsRunning] = useState(false)
   const [isSession, setIsSession] = useState(true)
+  const intervalRef = useRef(null)
 
-  // Функции для управления BreakLength
-  const incrementBreak = () => {
-    if (breakLength < 60 && !isRunning) {
-      setBreakLength(breakLength + 1)
+  // Запуск таймера
+  const handleStart = () => {
+    if (!isRunning) {
+      setIsRunning(true)
+      intervalRef.current = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime > 0) {
+            return prevTime - 1
+          } else {
+            const newMode = !isSession
+            setIsSession(newMode)
+            return newMode ? sessionLength * 60 : breakLength * 60
+          }
+        })
+      }, 1000)
     }
   }
 
-  const decrementBreak = () => {
-    if (breakLength > 1 && !isRunning) {
-      setBreakLength(breakLength - 1)
-    }
-  }
-
-  // Функции для управления SessionLength
-  const incrementSession = () => {
-    if (sessionLength < 60 && !isRunning) {
-      const newSessionLength = sessionLength + 1
-      setSessionLength(newSessionLength)
-      setTimeLeft(newSessionLength * 60)
-    }
-  }
-
-  const decrementSession = () => {
-    if (sessionLength > 1 && !isRunning) {
-      const newSessionLength = sessionLength - 1
-      setSessionLength(newSessionLength)
-      setTimeLeft(newSessionLength * 60)
-    }
-  }
-
-  // Функции для управления Timer
-  const handleStartPause = () => {
-    setIsRunning(!isRunning)
-  }
-
+  // Сброс таймера
   const handleReset = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+    }
     setIsRunning(false)
     setBreakLength(5)
     setSessionLength(25)
@@ -55,28 +42,28 @@ function App() {
     setIsSession(true)
   }
 
-  // Эффект для обновления времени при изменении sessionLength
+  // Обновление времени при изменении длительности сессии
   useEffect(() => {
-    if (!isRunning) {
+    if (isSession && !isRunning) {
       setTimeLeft(sessionLength * 60)
     }
-  }, [sessionLength, isRunning])
+  }, [sessionLength, isSession, isRunning])
 
-  // Эффект для работы таймера
+  // Обновление времени при изменении длительности перерыва
   useEffect(() => {
-    let interval = null
-
-    if (isRunning && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft(timeLeft - 1)
-      }, 1000)
-    } else if (isRunning && timeLeft === 0) {
-      setIsSession(!isSession)
-      setTimeLeft(isSession ? breakLength * 60 : sessionLength * 60)
+    if (!isSession && !isRunning) {
+      setTimeLeft(breakLength * 60)
     }
+  }, [breakLength, isSession, isRunning])
 
-    return () => clearInterval(interval)
-  }, [isRunning, timeLeft, isSession, breakLength, sessionLength])
+  // Очистка интервала при ресете
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [])
 
   return (
     <main>
@@ -84,22 +71,30 @@ function App() {
         timeLeft={timeLeft}
         isRunning={isRunning}
         isSession={isSession}
-        onStartPause={handleStartPause}
+        onStart={handleStart}
         onReset={handleReset}
       />
 
       <div className="lengthControlsContainer">
         <BreakLength
           breakLength={breakLength}
-          onIncrement={incrementBreak}
-          onDecrement={decrementBreak}
+          onIncrement={() =>
+            !isRunning && setBreakLength((b) => Math.min(b + 1, 60))
+          }
+          onDecrement={() =>
+            !isRunning && setBreakLength((b) => Math.max(b - 1, 1))
+          }
           isRunning={isRunning}
         />
 
         <SessionLength
           sessionLength={sessionLength}
-          onIncrement={incrementSession}
-          onDecrement={decrementSession}
+          onIncrement={() =>
+            !isRunning && setSessionLength((s) => Math.min(s + 1, 60))
+          }
+          onDecrement={() =>
+            !isRunning && setSessionLength((s) => Math.max(s - 1, 1))
+          }
           isRunning={isRunning}
         />
       </div>

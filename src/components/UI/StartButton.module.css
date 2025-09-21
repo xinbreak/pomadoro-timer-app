@@ -1,4 +1,4 @@
-.startPauseButton {
+.startButton {
   padding: 10px;
   background-color: transparent;
   border: 2px solid #000000;
@@ -8,11 +8,11 @@
   transition: 0.3s;
 }
 
-.startPauseButton:hover {
+.startButton:hover {
   background-color: rgba(218, 202, 202, 0.523);
   transition: 0.3s;
 }
 
-.startPauseButton:active {
+.startButton:active {
   transform: scale(0.95);
 }

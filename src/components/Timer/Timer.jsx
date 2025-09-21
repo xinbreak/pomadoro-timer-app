@@ -1,4 +1,4 @@
-import StartPauseButton from '../UI/StartPauseButton'
+import StartButton from '../UI/StartButton'
 import ResetButton from '../UI/ResetButton'
 import styles from './Timer.module.css'
 
@@ -6,7 +6,7 @@ export default function Timer({
   timeLeft,
   isRunning,
   isSession,
-  onStartPause,
+  onStart,
   onReset,
 }) {
   const formatTime = (seconds) => {
@@ -22,7 +22,7 @@ export default function Timer({
       <h4 className={styles.title}>{isSession ? 'SESSION' : 'BREAK'}</h4>
       <h1 className={styles.clock}>{formatTime(timeLeft)}</h1>
       <div className={styles.buttonBlock}>
-        <StartPauseButton isRunning={isRunning} onClick={onStartPause} />
+        <StartButton onClick={onStart} disabled={isRunning} />
         <ResetButton onClick={onReset} />
       </div>
     </div>
