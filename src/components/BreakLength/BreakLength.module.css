@@ -1,0 +1,35 @@
+.breakLengthContainer {
+  background-color: #323232;
+  border: 2px solid #000000;
+  border-radius: 16px;
+  padding: 10px;
+}
+
+.counterBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #99bcc0;
+  padding: 20px;
+  font-size: 32px;
+}
+
+.incrementButton,
+.decrementButton {
+  background-color: transparent;
+  border: 0;
+  transition: 0.3s;
+}
+
+.incrementButton:hover:active,
+.decrementButton:hover:active {
+  transition: 0.3s;
+  transform: scale(0.8);
+}
+
+.title {
+  color: #fff;
+  font-weight: 300;
+  margin-top: 10px;
+  text-align: center;
+}

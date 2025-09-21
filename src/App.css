@@ -1,0 +1,17 @@
+main {
+  margin: 136px 400px;
+  padding: 50px;
+  background-color: #b3bcbb;
+  border: 4px solid #000000;
+  border-radius: 20px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.lengthControlsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+}
